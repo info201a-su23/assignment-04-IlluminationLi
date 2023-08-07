@@ -1,0 +1,187 @@
+---
+title: "coding"
+author: "Shipei Huang"
+date: "2023-08-04"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+### Setup
+
+```{r cars}
+library(dplyr)
+library(tidyverse)
+library(ggplot2)
+library(readr)
+library(stringr)
+library(maps)
+# prison_pop <- read_csv(
+#  "https://github.com/melaniewalsh/Neat-Datasets/blob/main/us-prison-pop.csv?raw=true"
+#  )
+# jail_pop <- read_csv(
+#  "https://github.com/melaniewalsh/Neat-Datasets/blob/main/us-jail-pop.csv?raw=true"
+#  )
+wa_pop <- read.csv(
+  "https://github.com/melaniewalsh/Neat-Datasets/raw/main/us-prison-jail-rates-1990-WA.csv"
+  )
+# print(names(prison_pop))
+# print(names(jail_pop))
+print(names(wa_pop))
+```
+The U.S. has the most people in jail worldwide, and Black Americans, due to historical and current racism, are locked up much more than others. In this report, I chose the last data set (a smaller dataset about prison/jail population per 100,000 people (rate) per county/state starting at 1990 in Washington) given in our homework instruction. The reason I chose this dataset is because I live in WA state and would like to know more about the incarceration in our state.
+
+5 Variables I chose: 'Year'; 'Total_prison_pop'; 'Total_jail_pop'; 
+                    'black_jail_pop_rate' and 'white_jail_pop_rate';
+
+### Summary information
+
+5 Variables I calculated: 
+
+1. 'average_pop': Calculated out the average value of population in jails of each year throughout all the WA counties.
+    Max: 193220.3 in 2018.  Min: 125719.1 in 1990
+    
+2. 'average_jail_pop_rate of 1990 and 2018': Calculated out the average jail population rate at the earliest and most recent year.
+    average_jail_pop_rate_1990 = 221.0728.  average_jail_pop_rate_2018 = 326.6744
+    
+3. 'median_jail_pop_rate':  Calculated out the median jail rate from 1990 to 2018 throughout all WA counties.
+    The median observation is Whatcom County in 2007 with total_jail_pop_rate = 277.89
+
+4. 'highest_jail_pop_rate': Calculated out the county with highest jail population rate throughout all WA counties in this dataset.
+    Yakima County had the highest jail population rate 992.82 in 2007
+
+5. 'average_black_rate vs. average_white_rate': Calculated out the average jail rate for black and white people throughout counties.
+    average_black_rate = 1868.63, 	average_white_rate = 261.5801; Huge difference between white and black people!!
+    
+```{r pressure, echo=FALSE}
+average_pop <- wa_pop %>%
+  group_by(year) %>%
+  summarize(avg_jail_pop = mean(total_pop))
+
+average_pop
+
+# This is for all years
+#average_population <- wa_pop %>%
+#  summarize(avg_population = mean(total_pop)) 
+
+average_jail_pop_rate_1990 <- wa_pop %>%
+  filter(year == min(year)) %>%
+  summarise(mean(total_jail_pop_rate, na.rm = TRUE))
+
+average_jail_pop_rate_2018 <- wa_pop %>%
+  filter(year == max(year)) %>%
+  summarise(mean(total_jail_pop_rate, na.rm = TRUE))
+
+average_jail_pop_rate_1990
+average_jail_pop_rate_2018
+
+median_jail_pop_rate <- wa_pop %>%
+  filter(total_jail_pop_rate == median(total_jail_pop_rate, na.rm = TRUE))
+
+median_jail_pop_rate
+
+
+highest_jail_pop_rate <- wa_pop %>%
+  filter(total_jail_pop_rate == max(total_jail_pop_rate, na.rm = TRUE))
+highest_jail_pop_rate
+
+average_black_rate <- wa_pop %>%
+  summarise(mean(black_jail_pop_rate, na.rm = TRUE))
+
+average_white_rate <- wa_pop %>%
+  summarise(mean(white_jail_pop_rate, na.rm = TRUE))
+average_black_rate
+average_white_rate
+```
+
+### Trends Over Time Chart:
+```{r}
+#King county and Whatcom
+two_county <- wa_pop %>%
+  filter(county_name %in% c("King County", "Whatcom County"))
+
+chart1 <- ggplot(data = two_county, aes(x = year, y = black_jail_pop_rate, color = county_name)) +
+  geom_line() +
+  labs(title = "Trend of Black Jail Population in each County",
+       subtitle = "(Data from 1990 to 2018)",
+       x = "Year",
+       y = "Black Jail Population",
+       color = "County")+
+theme_minimal()
+```
+
+I chose King County because we live here and I chose Whatcom county because it's the median observation among all
+the WA counties. As we can see from the graph, King County had a lower average black jail population from 1990 to 2018. It also had smaller fluctuations in population change from year to year in overall. Since Whatcom county was the median observation in our data set (based on the median_jail_pop_rate), we can believe that King county is a relatively safe place than most of the WA Counties.
+
+
+### Variable Comparison Chart
+```{r}
+average_black_jail_pop_rate <- wa_pop %>%
+  group_by(year) %>%
+  summarize(avg_black_jail_pop_rate = mean(black_jail_pop_rate))
+average_black_jail_pop_rate
+
+average_white_jail_pop_rate <- wa_pop %>%
+  group_by(year) %>%
+  summarize(avg_white_jail_pop_rate = mean(white_jail_pop_rate))
+average_white_jail_pop_rate
+
+ggplot(average_black_jail_pop_rate, aes(x = year)) +
+  geom_line(aes(y = avg_black_jail_pop_rate, color = "Black Jail Population")) +
+  geom_line(aes(y = average_white_jail_pop_rate$avg_white_jail_pop_rate, color = "White Jail Population")) +
+  scale_x_continuous(limits = c(2010, 2018)) +
+  labs(title = "Average Population Rate in Jails by Year",
+       x = "Year",
+       y = "Average Jail Population Rate",
+       subtitle = "Data from year 2010 to 2018")
+
+ggplot(wa_pop, aes(x = white_jail_pop_rate, y = black_jail_pop_rate)) +
+  geom_point(color = "blue") +
+  geom_smooth(method = "lm", color = "red", se = FALSE) +  
+  labs(title = "White Jail Population vs Black Jail Population",
+       x = "White Jail Population Rate",
+       y = "Black Jail Population Rate")
+```
+
+This graph shows the weak relationship between average jail population rate of the black and white people. We can
+still see that the black people have higher average jail population rate than white people. Based
+on the graph above, there is a very weak relationship between white jail population and black
+jail population. The distribution of the points is so random and the slope of the regression line is small.
+
+
+### Map
+```{r}
+#most recent year
+wa_pop <- read.csv(
+  "https://github.com/melaniewalsh/Neat-Datasets/raw/main/us-prison-jail-rates-1990-WA.csv"
+  )
+
+wa_pop <- wa_pop %>%
+  filter(year == max(year))
+
+wa_counties <- map_data("county", region = "washington")
+wa_counties <- wa_counties %>%
+  mutate(subregion = str_to_title(subregion) %>% str_c(" County"))
+
+# Merge data
+merged_data <- left_join(wa_counties, wa_pop, by = c("subregion" = "county_name"))
+
+
+chart3 <- ggplot(data = merged_data, aes(x = long, y = lat, group = group, fill = total_jail_pop_rate)) +
+  geom_polygon() +
+  coord_fixed(1) +
+  labs(title = "Total Jail Population Rate of All WA Counties in 2018",
+       fill = "Total Jail Rate",
+       x = "Longitude",
+       y = "Latitude" ) +
+  scale_fill_gradient(name = "Total Jail Rate", 
+                      low = "yellow", high = "red",
+                      ) +
+  theme_minimal()
+
+print(chart3)
+```
+Based on the map above, we can see that most of the counties have total jail rate around 400 in 2018. 
+In overall, they have similar jail rates (no big difference).

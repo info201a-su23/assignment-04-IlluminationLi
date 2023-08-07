@@ -1,71 +1,93 @@
 ---
 title: "A3: Incarceration"
+author: "Shipei Huang"
+date: "08/04/23"
 output: html_document
 ---
+```{r setup, include=FALSE}
+source("coding.R")
+```
 
 ### Introduction
-
-An introduction of the problem domain and a description of the variable(s) you are choosing to analyze (and why!)
-
+The U.S. has the most people in jail worldwide, and Black Americans, due to historical and current racism, are locked up much more than others. In this report, I chose the last data set (a smaller dataset about prison/jail population per 100,000 people (rate) per county/state starting at 1990 in Washington) given in our homework instruction. The reason I chose this dataset is because I live in WA state and would like to know more about the incarceration in our state.
+                    
 ### Summary Information
+5 Variables I calculated: 
 
-Write a summary paragraph of findings that includes the 5 values calculated from your summary information R script
+1. 'average_pop': Calculated out the average value of population in jails of each year throughout all the WA counties.
+    Max: 193220.3 in 2018.  Min: 125719.1 in 1990
+    
+2. 'average_jail_pop_rate of 1990 and 2018': Calculated out the average jail population rate at the earliest and most recent year.
+    average_jail_pop_rate_1990 = 221.0728.  average_jail_pop_rate_2018 = 326.6744
+    
+3. 'median_jail_pop_rate':  Calculated out the median jail rate from 1990 to 2018 throughout all WA counties.
+    The median observation is Whatcom County in 2007 with total_jail_pop_rate = 277.89
 
-These will likely be calculated using your DPLYR skills, answering questions such as: 
+4. 'highest_jail_pop_rate': Calculated out the county with highest jail population rate throughout all WA counties in this dataset.
+    Yakima County had the highest jail population rate 992.82 in 2007
 
-- What is the average value of my variable across all the counties (in the current year)?
-- Where is my variable the highest / lowest?
-- How much has my variable change over the last N years?
+5. 'average_black_rate vs. average_white_rate': Calculated out the average jail rate for black and white people throughout counties.
+    average_black_rate = 1868.63, 	average_white_rate = 261.5801; Huge difference between white and black people!!
 
-Feel free to calculate and report values that you find relevant. Again, remember that the purpose is to think about how these measure of incarceration vary by race.
+```{r}
+average_pop
+average_jail_pop_rate_1990
+average_jail_pop_rate_2018
+median_jail_pop_rate
+highest_jail_pop_rate
+average_black_rate
+average_white_rate
+```
 
 ### The Dataset
 
-Who collected the data?  
-How was the data collected or generated?  
-Why was the data collected?  
-How many observations (rows) are in your data?  
-How many features (columns) are in the data?  
-What, if any, ethical questions or questions of power do you need to consider when working with this data?  
-What are possible limitations or problems with this data?   (at least 200 words)
+1. Who collected the data? 
+This dataset was assembled using information collected by the U.S. Department of Justice Bureau of Justice Statistics (BJS), supplemented with data from state departments of correction when federal data is not available
+
+2. How was the data collected or generated? 
+The prison variables draw on the National Corrections Reporting Program (NCRP) and data collected directly from state departments of correction, when NCRP data is not available or is unreliable. These two sources are combined when creating the prison variables. The jails data draws on the Annual Survey of Jails (ASJ), Census of Jails (COJ), and population and admissions variables from Death in Custody Reporting Program (DCRP). The ASJ and COJ data are combined when creating the jail variables. This dataset provides county-level data on prison and jail incarceration and related measures over time for the entire United States.
+
+3. Why was the data collected?  
+The purpose of this dataset is to provide detail on the sources and variables in the Incarceration Trends dataset.This dataset is a good reference for important topics like racial and money-related differences, decisions made by the government, and fairness problems in the system.
+
+4. How many observations (rows) are in your data?  
+1131 rows
+
+5. How many features (columns) are in the data?  
+23columns
+
+6. What, if any, ethical questions or questions of power do you need to consider when working with this data?  
+I think we need to consider the fairness and bias problem that may exist when working with this data. If the data is not objective and itself has bias. Then our trending analysis would be biased as well. I would also consider the transparency of this data when working with it. For example, I will consider that is the data collection process transparent, and can others understand how the data was gathered? Is there a risk of hidden agendas or manipulation. 
+
+
+7. What are possible limitations or problems with this data? 
+Using this data the wrong way could accidentally support wrong ideas or keep unfair things going. The data comes mostly from the government or big organizations, which might make it not completely fair because they collect and understand it differently. Also, sometimes the data from these places might not be accurate because they want to look good or follow certain rules. 
 
 
 ### Trends Over Time Chart
-
-Include a chart. Make sure to describe why you included the chart, and what patterns emerged
-
-The first chart that you will create and include will show the trend over time of your variable/topic. Think carefully about what you want to communicate to your user (you may have to find relevant trends in the dataset first!). Here are some requirements to help guide your design:
-
-- Show more than one, but fewer than ~10 trends
-  - This may mean showing the same measure for different locations or different racial groups. Think carefully about a meaningful comparison of locations (e.g., the top 10 counties in a state, top 10 states, etc.)
-- You must have clear x and y axis labels
-- The chart needs a clear title 
-- You need a legend for your different line colors and a clear legend title
-
-When we say "clear" or "human readable" titles and labels, that means that you should not just display the variable name.
-
-Here's an example of how to run an R script inside an RMarkdown file:
-
-``````{r, echo = FALSE, code = readLines("chart1_example.R")}
+```{r}
+chart1
 ```
 
+I chose King County because we live here and I chose Whatcom county because it's the median observation among all
+the WA counties. As we can see from the graph, King County had a lower average black jail population from 1990 to 2018. It also had smaller fluctuations in jail population change from year to year in overall. Since Whatcom county was the median observation in our data set (based on the median_jail_pop_rate), we can believe that King county is a relatively safe place than most of the WA Counties.
+
 ### Variable Comparison Chart
+```{r pressure, echo=FALSE}
+chart2
+```
 
-Include a chart. Make sure to describe why you included the chart, and what patterns emerged
+This graph shows the weak relationship between average jail population rate of the black and white people. We can
+still see that the black people have higher average jail population rate than white people. Based
+on the graph above, there is a very weak relationship between white jail population and black
+jail population. The distribution of the points is so random and the slope of the regression line is small.
 
-The second chart that you will create and include will show how two different (continuous) variables are related to one another. Again, think carefully about what such a comparison means and what you want to communicate to your user (you may have to find relevant trends in the dataset first!). Here are some requirements to help guide your design:
-
-- You must have clear x and y axis labels
-- The chart needs a clear title 
-- If you choose to add a color encoding (not required), you need a legend for your different color and a clear legend title
+Based on the regression line, we can predict that as white jail population rate increases, the black jail population rate also increases. This totally make sense especially when there is high unemployment.
 
 ### Map
+```{r}
+chart3
+```
 
-Include a chart. Make sure to describe why you included the chart, and what patterns emerged
-
-The last chart that you will create and include will show how a variable is distributed geographically. Again, think carefully about what such a comparison means and what you want to communicate to your user (you may have to find relevant trends in the dataset first!). Here are some requirements to help guide your design:
-
-- Your map needs a title
-- Your color scale needs a legend with a clear label
-- Use a map based coordinate system to set the aspect ratio of your map
+I chose this chart because I live in WA state all the time and want to figure out the most recent jail data for different counties. Based on the map above, we can see that most of the counties have total jail rate around 400 in 2018. In overall, they have similar jail rates (no big difference).
 
